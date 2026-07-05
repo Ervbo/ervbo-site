@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ervbo | Digital Bible Study Resources</title>
+<meta name="description" content="Free digital Bible study resources: a Strong's-based study workspace, word-study concordances tracing Hebrew and Greek word families, and the Spurgeon Sermon Series.">
+
+<!-- ============================================================
+     BEFORE PUBLISHING — replace these placeholders:
+     1. WORKSPACE_URL  — currently the tinyurl; swap in your direct
+        Notion share link (Notion > Share > Publish > copy link)
+     2. YOUTUBE_URL    — your Spurgeon Sermon Series channel URL
+     3. EMAIL          — the address you want people to use
+     Search this file for "REPLACE" to find each spot.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper:      #FBFAF6;   /* page background — near-white book paper */
+    --ink:        #1B2431;   /* oxford ink — headings & body text      */
+    --graphite:   #4E5A6A;   /* secondary text                          */
+    --red-letter: #9E1B26;   /* crimson — reserved for Christ's words,
+                                 links, and the primary action           */
+    --gilt:       #B08D3E;   /* gold — the gilded page edge only        */
+    --rule:       #E5E1D6;   /* hairline rules                          */
+    --card:       #FFFFFF;
+
+    --display: 'Cardo', 'Times New Roman', serif;
+    --body:    'Source Sans 3', system-ui, sans-serif;
+    --mono:    'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rise { animation: none !important; opacity: 1 !important; }
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    /* the gilded edge — like the gold leaf on a Bible's pages */
+    border-top: 4px solid var(--gilt);
+  }
+
+  a { color: var(--red-letter); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--red-letter);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 28px 0 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .wordmark {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .wordmark span { color: var(--red-letter); }
+  nav a {
+    color: var(--graphite);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    margin-left: 26px;
+  }
+  nav a:hover { color: var(--red-letter); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 56px;
+    align-items: center;
+    padding: 72px 0 80px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--graphite);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(34px, 4.6vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin-bottom: 22px;
+  }
+  .redletter {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 21px;
+    color: var(--red-letter);
+    margin-bottom: 6px;
+  }
+  .redletter-ref {
+    font-size: 14px;
+    color: var(--graphite);
+    margin-bottom: 30px;
+  }
+  .redletter-ref em { font-style: normal; color: var(--red-letter); }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px; }
+  .btn {
+    display: inline-block;
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 13px 26px;
+    border-radius: 3px;
+  }
+  .btn-primary {
+    background: var(--red-letter);
+    color: #fff;
+    border: 1px solid var(--red-letter);
+  }
+  .btn-primary:hover { background: #841620; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .btn-secondary:hover { border-color: var(--red-letter); color: var(--red-letter); }
+
+  /* ---------- concordance card (the signature) ---------- */
+  .concordance {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(27,36,49,0.05), 0 12px 32px rgba(27,36,49,0.07);
+    padding: 26px 28px 20px;
+  }
+  .concordance h2 {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--graphite);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+  }
+  .entry {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .entry:last-of-type { border-bottom: none; }
+  .lemma {
+    font-family: var(--display);
+    font-size: 27px;
+    line-height: 1.2;
+  }
+  .lemma[lang="he"] { direction: rtl; text-align: left; }
+  .gloss { font-size: 14.5px; color: var(--graphite); }
+  .gloss strong { color: var(--ink); font-weight: 600; }
+  .strongs {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--graphite);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .concordance-note {
+    font-size: 13px;
+    color: var(--graphite);
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ---------- sections ---------- */
+  section { padding: 64px 0; border-top: 1px solid var(--rule); }
+  .section-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 30px;
+    margin-bottom: 28px;
+  }
+
+  /* resources */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card h3 { font-family: var(--display); font-size: 21px; margin-bottom: 10px; }
+  .card p { font-size: 15.5px; color: var(--graphite); flex: 1; margin-bottom: 18px; }
+  .card a { font-weight: 700; font-size: 15px; }
+
+  /* about */
+  .about-cols { max-width: 720px; }
+  .about-cols p { margin-bottom: 18px; }
+  .about-cols p:last-child { margin-bottom: 0; }
+
+  /* ---------- footer ---------- */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 44px 0 56px;
+    font-size: 15px;
+    color: var(--graphite);
+  }
+  .footer-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+  .footer-links a { margin-right: 22px; }
+  .verse-close {
+    font-family: var(--display);
+    font-style: italic;
+    margin-top: 28px;
+    font-size: 15.5px;
+  }
+
+  /* ---------- motion ---------- */
+  .rise { opacity: 0; animation: rise 0.7s ease-out forwards; }
+  .rise.d2 { animation-delay: 0.12s; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 0 56px; }
+    .cards { grid-template-columns: 1fr; }
+    .entry { grid-template-columns: 1fr; gap: 6px; }
+    nav a { margin-left: 16px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a class="wordmark" href="#top">ERV<span>BO</span></a>
+    <nav aria-label="Main">
+      <a href="#resources">Resources</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="rise">
+        <p class="eyebrow">Digital Bible Study &middot; Free to All</p>
+        <h1>Search the Scriptures in every language they were given.</h1>
+        <p class="redletter">&ldquo;Behold, I make all things new.&rdquo;</p>
+        <p class="redletter-ref">Revelation 21:5 &mdash; <em>the words of Christ in red</em></p>
+        <div class="cta-row">
+          <!-- REPLACE: WORKSPACE_URL — swap tinyurl for your direct Notion link -->
+          <a class="btn btn-primary" href="https://jagged-lemur-cbc.notion.site/951302dcb999475ba759af987e8e2648?v=f721ab1609b34a8bbc6a3dbbbaf6cd75">Open the study workspace</a>
+          <!-- REPLACE: YOUTUBE_URL -->
+          <a class="btn btn-secondary" href="https://www.youtube.com/@spurgeonsermonseries">Watch the Spurgeon series</a>
+        </div>
+      </div>
+
+      <aside class="concordance rise d2" aria-label="Sample concordance entries">
+        <h2>From the word-study files &middot; Renewal</h2>
+        <div class="entry">
+          <span class="lemma" lang="he">חָדַשׁ</span>
+          <span class="gloss"><strong>chadash</strong> &mdash; to renew, repair. &ldquo;Renew a right spirit within me&rdquo; (Ps 51:10)</span>
+          <span class="strongs">H2318</span>
+        </div>
+        <div class="entry">
+          <span class="lemma" lang="el">ἀνακαινόω</span>
+          <span class="gloss"><strong>anakaino&#333;</strong> &mdash; to make new again. &ldquo;The inward man is renewed day by day&rdquo; (2 Cor 4:16)</span>
+          <span class="strongs">G341</span>
+        </div>
+        <div class="entry">
+          <span class="lemma" lang="el">ἀποκατάστασις</span>
+          <span class="gloss"><strong>apokatastasis</strong> &mdash; restoration. &ldquo;The restitution of all things&rdquo; (Acts 3:21)</span>
+          <span class="strongs">G605</span>
+        </div>
+        <p class="concordance-note">Tracing word families across Hebrew, Greek, and English with Strong&rsquo;s numbers &mdash; one study at a time.</p>
+      </aside>
+    </div>
+
+    <section id="resources">
+      <h2 class="section-title">Resources</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Bible Study Workspace</h3>
+          <p>A growing library of study notes, reading plans, and reference material, organized so you can search it and put it to work in your own study.</p>
+          <!-- REPLACE: WORKSPACE_URL -->
+          <a href="https://jagged-lemur-cbc.notion.site/951302dcb999475ba759af987e8e2648?v=f721ab1609b34a8bbc6a3dbbbaf6cd75">Open the workspace &rarr;</a>
+        </div>
+        <div class="card">
+          <h3>Spurgeon Sermon Series</h3>
+          <p>Sermons from the Prince of Preachers, brought to YouTube. Charles Spurgeon preached Christ in every message &mdash; these recordings make his work easy to listen to anywhere.</p>
+          <!-- REPLACE: YOUTUBE_URL -->
+          <a href="https://www.youtube.com/@spurgeonsermonseries">Visit the channel &rarr;</a>
+        </div>
+        <div class="card">
+          <h3>Word Studies</h3>
+          <p>An ongoing concordance project tracing biblical word families &mdash; currently the language of renewal and redemption &mdash; through the Hebrew, the Greek, and the King James text.</p>
+          <!-- REPLACE: link to a published study page when ready; points to workspace for now -->
+          <a href="https://jagged-lemur-cbc.notion.site/951302dcb999475ba759af987e8e2648?v=f721ab1609b34a8bbc6a3dbbbaf6cd75">Follow the project &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <h2 class="section-title">About Ervbo</h2>
+      <div class="about-cols">
+        <p>I&rsquo;m Erv &mdash; a retired mechanical engineer who has spent a lifetime reading the Bible and now spends his retirement building digital tools to study it more deeply. Ervbo is where that work lives.</p>
+        <p>My conviction is simple: Scripture rewards careful study. I&rsquo;ve read the Bible cover to cover many times, and every pass turns up something I hadn&rsquo;t seen before. These days my study runs through the original languages &mdash; tracing Hebrew and Greek word families with Strong&rsquo;s concordance to see how a single thread of meaning, like God&rsquo;s promise to renew and restore His creation, runs from Genesis to Revelation.</p>
+        <p>An engineer&rsquo;s habits die hard, so I approach the text the way I approached my work: from first principles, with the best tools I can find, and when the right tool doesn&rsquo;t exist, I build it. That&rsquo;s what you&rsquo;ll find here &mdash; study resources, word-study projects, and recordings of preaching that has shaped me.</p>
+        <p>Along the way I&rsquo;ve learned from faithful teachers: Charles Spurgeon above all, along with Warren Wiersbe, Erwin Lutzer, John Piper, and Thomas Aquinas. If their fingerprints show up in these pages, that&rsquo;s no accident.</p>
+        <p>Everything here is free. If it helps you read the Word more closely, it has done its job.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="footer-grid">
+      <div>
+        <!-- REPLACE: EMAIL -->
+        <p>Questions or suggestions? Write to <a href="mailto:me@ervbo.com">me@ervbo.com</a></p>
+        <p class="verse-close">&ldquo;Thy word is a lamp unto my feet, and a light unto my path.&rdquo; &mdash; Psalm 119:105</p>
+      </div>
+      <div class="footer-links">
+        <!-- REPLACE: YOUTUBE_URL; add or remove social links as you like -->
+	<a href="https://www.youtube.com/@spurgeonsermonseries">YouTube</a>
+        <!-- <a href="https://www.facebook.com/">Facebook</a> -->
+      </div>
+    </div>
+    <p style="margin-top:28px; font-size:13.5px;">&copy; <span id="yr">2026</span> Ervbo. Soli Deo Gloria.</p>
+  </footer>
+</div>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
