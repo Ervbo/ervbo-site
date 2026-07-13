@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bible Reader | Ervbo</title>
+<meta name="description" content="Read the Bible in KJV and ASV, side by side, with your own study notes — free at ervbo.com.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper:      #FBFAF6;
+    --ink:        #1B2431;
+    --graphite:   #4E5A6A;
+    --red-letter: #9E1B26;
+    --gilt:       #B08D3E;
+    --rule:       #E5E1D6;
+    --card:       #FFFFFF;
+    --display: 'Cardo', 'Times New Roman', serif;
+    --body:    'Source Sans 3', system-ui, sans-serif;
+    --mono:    'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    border-top: 4px solid var(--gilt);
+  }
+  a { color: var(--red-letter); }
+  a:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--red-letter); outline-offset: 2px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    padding: 18px 0 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .wordmark {
+    font-family: var(--display); font-weight: 700; font-size: 22px;
+    letter-spacing: 0.04em; color: var(--ink); text-decoration: none;
+  }
+  .wordmark span { color: var(--red-letter); }
+  .header-note { font-size: 13.5px; color: var(--graphite); }
+  .header-note a { font-weight: 600; }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding: 16px 0;
+  }
+  select, .ctl-btn {
+    font-family: var(--body); font-size: 15px; font-weight: 600;
+    color: var(--ink); background: var(--card);
+    border: 1px solid var(--rule); border-radius: 3px;
+    padding: 8px 12px; cursor: pointer;
+  }
+  select:hover, .ctl-btn:hover { border-color: var(--graphite); }
+  .ctl-btn.nav-btn { padding: 8px 14px; }
+  .trans-group { display: flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+  .trans-group button {
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    padding: 8px 14px; border: none; background: var(--card);
+    color: var(--graphite); cursor: pointer;
+  }
+  .trans-group button + button { border-left: 1px solid var(--rule); }
+  .trans-group button.active { background: var(--red-letter); color: #fff; }
+  .spacer { flex: 1; }
+
+  /* ---------- split layout ---------- */
+  .split {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 22px;
+    align-items: start;
+    padding-bottom: 60px;
+  }
+
+  /* ---------- scripture panel ---------- */
+  .scripture {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(27,36,49,0.05);
+    padding: 30px 34px 40px;
+    min-height: 400px;
+  }
+  .passage-title {
+    font-family: var(--display); font-weight: 700;
+    font-size: 30px; margin-bottom: 4px;
+  }
+  .passage-sub {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--graphite);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 14px; margin-bottom: 20px;
+  }
+  .verse {
+    font-family: var(--display);
+    font-size: 19px;
+    line-height: 1.75;
+    margin-bottom: 10px;
+  }
+  .vnum {
+    font-family: var(--mono); font-size: 11.5px;
+    color: var(--red-letter); vertical-align: super;
+    margin-right: 6px;
+  }
+  .parallel-pair { border-bottom: 1px solid var(--rule); padding: 10px 0; }
+  .parallel-pair .verse { margin-bottom: 6px; }
+  .trans-tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em;
+    color: var(--graphite); margin-right: 8px;
+  }
+  .status { color: var(--graphite); font-size: 15px; padding: 20px 0; }
+  .status.error { color: var(--red-letter); }
+  .chap-nav { display: flex; justify-content: space-between; margin-top: 26px; }
+
+  /* ---------- notes panel ---------- */
+  .notes {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(27,36,49,0.05);
+    padding: 22px 22px 18px;
+    position: sticky; top: 16px;
+    display: flex; flex-direction: column;
+  }
+  .notes h2 {
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--graphite);
+    padding-bottom: 10px; border-bottom: 1px solid var(--rule); margin-bottom: 12px;
+  }
+  .notes textarea {
+    font-family: var(--body); font-size: 15.5px; line-height: 1.6;
+    color: var(--ink); background: var(--paper);
+    border: 1px solid var(--rule); border-radius: 3px;
+    padding: 12px; width: 100%;
+    min-height: 320px; resize: vertical;
+  }
+  .notes-meta {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-top: 10px; font-size: 12.5px; color: var(--graphite);
+  }
+  .save-dot { font-family: var(--mono); font-size: 11.5px; }
+  .notes-actions { display: flex; gap: 8px; margin-left: auto; }
+  .mini-btn {
+    font-family: var(--body); font-size: 12.5px; font-weight: 700;
+    color: var(--red-letter); background: none;
+    border: 1px solid var(--rule); border-radius: 3px;
+    padding: 5px 10px; cursor: pointer;
+  }
+  .mini-btn:hover { border-color: var(--red-letter); }
+  .storage-note { font-size: 12px; color: var(--graphite); margin-top: 10px; line-height: 1.5; }
+
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .notes { position: static; }
+    .scripture { padding: 22px 20px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a class="wordmark" href="index.html">ERV<span>BO</span></a>
+    <p class="header-note">Bible Reader &mdash; KJV &amp; ASV &middot; <a href="index.html">back to home</a></p>
+  </header>
+
+  <div class="controls">
+    <select id="bookSel" aria-label="Book"></select>
+    <select id="chapSel" aria-label="Chapter"></select>
+    <div class="trans-group" role="group" aria-label="Translation">
+      <button id="btnKJV" class="active">KJV</button>
+      <button id="btnASV">ASV</button>
+      <button id="btnBoth">Both</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="ctl-btn nav-btn" id="prevBtn">&larr; Prev</button>
+    <button class="ctl-btn nav-btn" id="nextBtn">Next &rarr;</button>
+  </div>
+
+  <div class="split">
+    <main class="scripture">
+      <h1 class="passage-title" id="passTitle">&nbsp;</h1>
+      <p class="passage-sub" id="passSub">&nbsp;</p>
+      <div id="passage"><p class="status">Loading&hellip;</p></div>
+      <div class="chap-nav">
+        <button class="ctl-btn nav-btn" id="prevBtn2">&larr; Previous chapter</button>
+        <button class="ctl-btn nav-btn" id="nextBtn2">Next chapter &rarr;</button>
+      </div>
+    </main>
+
+    <aside class="notes">
+      <h2 id="notesTitle">Notes</h2>
+      <textarea id="noteBox" placeholder="Your study notes for this chapter&hellip;"></textarea>
+      <div class="notes-meta">
+        <span class="save-dot" id="saveDot"></span>
+        <div class="notes-actions">
+          <button class="mini-btn" id="exportBtn">Export all</button>
+          <button class="mini-btn" id="importBtn">Import</button>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+        </div>
+      </div>
+      <p class="storage-note">Notes are saved automatically in this browser on this device. Use <strong>Export all</strong> regularly to back them up or move them to another device, and <strong>Import</strong> to load them there.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---------- data ----------
+  var BOOKS = [
+    ["Genesis",50],["Exodus",40],["Leviticus",27],["Numbers",36],["Deuteronomy",34],
+    ["Joshua",24],["Judges",21],["Ruth",4],["1 Samuel",31],["2 Samuel",24],
+    ["1 Kings",22],["2 Kings",25],["1 Chronicles",29],["2 Chronicles",36],["Ezra",10],
+    ["Nehemiah",13],["Esther",10],["Job",42],["Psalms",150],["Proverbs",31],
+    ["Ecclesiastes",12],["Song of Solomon",8],["Isaiah",66],["Jeremiah",52],["Lamentations",5],
+    ["Ezekiel",48],["Daniel",12],["Hosea",14],["Joel",3],["Amos",9],
+    ["Obadiah",1],["Jonah",4],["Micah",7],["Nahum",3],["Habakkuk",3],
+    ["Zephaniah",3],["Haggai",2],["Zechariah",14],["Malachi",4],
+    ["Matthew",28],["Mark",16],["Luke",24],["John",21],["Acts",28],
+    ["Romans",16],["1 Corinthians",16],["2 Corinthians",13],["Galatians",6],["Ephesians",6],
+    ["Philippians",4],["Colossians",4],["1 Thessalonians",5],["2 Thessalonians",3],["1 Timothy",6],
+    ["2 Timothy",4],["Titus",3],["Philemon",1],["Hebrews",13],["James",5],
+    ["1 Peter",5],["2 Peter",3],["1 John",5],["2 John",1],["3 John",1],
+    ["Jude",1],["Revelation",22]
+  ];
+  var API = "https://bible-api.com/";
+  var NOTES_KEY = "ervbo-notes-v1";
+  var POS_KEY = "ervbo-reader-pos";
+
+  // ---------- state ----------
+  var book = "John", chap = 1, trans = "kjv"; // trans: kjv | asv | both
+  var saveTimer = null, fetchSeq = 0;
+
+  // ---------- elements ----------
+  function $(id){ return document.getElementById(id); }
+  var bookSel=$("bookSel"), chapSel=$("chapSel"), passage=$("passage"),
+      passTitle=$("passTitle"), passSub=$("passSub"),
+      noteBox=$("noteBox"), saveDot=$("saveDot"), notesTitle=$("notesTitle");
+
+  // ---------- storage (guarded: private-mode etc.) ----------
+  function store(){ try { return window.localStorage; } catch(e){ return null; } }
+  function loadNotes(){
+    var s = store(); if(!s) return {};
+    try { return JSON.parse(s.getItem(NOTES_KEY) || "{}"); } catch(e){ return {}; }
+  }
+  function saveNotes(obj){
+    var s = store(); if(!s) return false;
+    try { s.setItem(NOTES_KEY, JSON.stringify(obj)); return true; } catch(e){ return false; }
+  }
+  function chapterKey(){ return book + " " + chap; }
+
+  // ---------- UI builders ----------
+  function fillBooks(){
+    BOOKS.forEach(function(b){
+      var o=document.createElement("option"); o.value=b[0]; o.textContent=b[0];
+      bookSel.appendChild(o);
+    });
+  }
+  function chapterCount(name){
+    for(var i=0;i<BOOKS.length;i++) if(BOOKS[i][0]===name) return BOOKS[i][1];
+    return 1;
+  }
+  function fillChapters(){
+    chapSel.innerHTML="";
+    var n=chapterCount(book);
+    for(var c=1;c<=n;c++){
+      var o=document.createElement("option"); o.value=c; o.textContent="Chapter "+c;
+      chapSel.appendChild(o);
+    }
+    chapSel.value=chap;
+  }
+
+  // ---------- fetching ----------
+  function fetchChapter(tr){
+    var url = API + encodeURIComponent(book + " " + chap) + "?translation=" + tr;
+    return fetch(url).then(function(r){
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      return r.json();
+    });
+  }
+  function esc(t){
+    var d=document.createElement("div"); d.textContent=t; return d.innerHTML;
+  }
+  function renderSingle(data){
+    var html="";
+    (data.verses||[]).forEach(function(v){
+      html += '<p class="verse"><span class="vnum">'+v.verse+'</span>'+esc(v.text.trim())+'</p>';
+    });
+    passage.innerHTML = html || '<p class="status">No text returned.</p>';
+  }
+  function renderParallel(kjv, asv){
+    var k=kjv.verses||[], a=asv.verses||[], n=Math.max(k.length,a.length), html="";
+    for(var i=0;i<n;i++){
+      html += '<div class="parallel-pair">';
+      if(k[i]) html += '<p class="verse"><span class="vnum">'+k[i].verse+'</span><span class="trans-tag">KJV</span>'+esc(k[i].text.trim())+'</p>';
+      if(a[i]) html += '<p class="verse"><span class="trans-tag" style="margin-left:22px">ASV</span>'+esc(a[i].text.trim())+'</p>';
+      html += '</div>';
+    }
+    passage.innerHTML = html || '<p class="status">No text returned.</p>';
+  }
+  function load(){
+    var seq = ++fetchSeq;
+    passTitle.textContent = book + " " + chap;
+    passSub.textContent = (trans==="both") ? "KJV & ASV · Parallel" : trans.toUpperCase();
+    notesTitle.textContent = "Notes — " + chapterKey();
+    passage.innerHTML = '<p class="status">Loading '+esc(chapterKey())+'&hellip;</p>';
+
+    var job = (trans==="both")
+      ? Promise.all([fetchChapter("kjv"), fetchChapter("asv")])
+      : fetchChapter(trans);
+
+    job.then(function(res){
+      if(seq!==fetchSeq) return; // a newer request superseded this one
+      if(trans==="both") renderParallel(res[0],res[1]); else renderSingle(res);
+      window.scrollTo({top:0});
+    }).catch(function(err){
+      if(seq!==fetchSeq) return;
+      passage.innerHTML = '<p class="status error">Could not load the passage ('+esc(err.message)+'). Check your internet connection and try again — the text is fetched from bible-api.com.</p>';
+    });
+
+    // notes for this chapter
+    var all = loadNotes();
+    noteBox.value = all[chapterKey()] || "";
+    saveDot.textContent = "";
+
+    // remember position
+    var s = store();
+    if(s){ try{ s.setItem(POS_KEY, JSON.stringify({b:book,c:chap,t:trans})); }catch(e){} }
+  }
+
+  // ---------- notes autosave ----------
+  noteBox.addEventListener("input", function(){
+    saveDot.textContent = "saving…";
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      var all = loadNotes();
+      var txt = noteBox.value;
+      if(txt.trim()==="") delete all[chapterKey()]; else all[chapterKey()] = txt;
+      saveDot.textContent = saveNotes(all) ? "saved ✓" : "couldn't save — storage unavailable";
+    }, 500);
+  });
+
+  // ---------- export / import ----------
+  $("exportBtn").addEventListener("click", function(){
+    var blob = new Blob([JSON.stringify(loadNotes(), null, 2)], {type:"application/json"});
+    var aEl = document.createElement("a");
+    aEl.href = URL.createObjectURL(blob);
+    var d = new Date(), pad=function(x){return (x<10?"0":"")+x;};
+    aEl.download = "ervbo-notes-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";
+    aEl.click();
+    URL.revokeObjectURL(aEl.href);
+  });
+  $("importBtn").addEventListener("click", function(){ $("importFile").click(); });
+  $("importFile").addEventListener("change", function(ev){
+    var f = ev.target.files[0]; if(!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      try {
+        var incoming = JSON.parse(rd.result);
+        var all = loadNotes(), added=0;
+        Object.keys(incoming).forEach(function(k){
+          if(typeof incoming[k]==="string"){
+            if(all[k] && all[k]!==incoming[k]){
+              all[k] = all[k] + "\n\n--- imported " + new Date().toLocaleDateString() + " ---\n" + incoming[k];
+            } else { all[k] = incoming[k]; }
+            added++;
+          }
+        });
+        saveNotes(all);
+        noteBox.value = all[chapterKey()] || "";
+        saveDot.textContent = "imported "+added+" chapter note(s) ✓";
+      } catch(e){ saveDot.textContent = "import failed — not a valid notes file"; }
+      ev.target.value = "";
+    };
+    rd.readAsText(f);
+  });
+
+  // ---------- navigation ----------
+  function go(delta){
+    var idx = -1;
+    for(var i=0;i<BOOKS.length;i++) if(BOOKS[i][0]===book){ idx=i; break; }
+    var c = chap + delta;
+    if(c < 1){
+      if(idx>0){ idx--; book=BOOKS[idx][0]; chap=BOOKS[idx][1]; }
+    } else if(c > chapterCount(book)){
+      if(idx < BOOKS.length-1){ idx++; book=BOOKS[idx][0]; chap=1; }
+    } else { chap = c; }
+    bookSel.value=book; fillChapters(); load();
+  }
+  ["prevBtn","prevBtn2"].forEach(function(id){ $(id).addEventListener("click", function(){ go(-1); }); });
+  ["nextBtn","nextBtn2"].forEach(function(id){ $(id).addEventListener("click", function(){ go(1); }); });
+
+  bookSel.addEventListener("change", function(){ book=bookSel.value; chap=1; fillChapters(); load(); });
+  chapSel.addEventListener("change", function(){ chap=parseInt(chapSel.value,10); load(); });
+
+  function setTrans(t){
+    trans=t;
+    $("btnKJV").classList.toggle("active", t==="kjv");
+    $("btnASV").classList.toggle("active", t==="asv");
+    $("btnBoth").classList.toggle("active", t==="both");
+    load();
+  }
+  $("btnKJV").addEventListener("click", function(){ setTrans("kjv"); });
+  $("btnASV").addEventListener("click", function(){ setTrans("asv"); });
+  $("btnBoth").addEventListener("click", function(){ setTrans("both"); });
+
+  // ---------- init ----------
+  fillBooks();
+  var s=store();
+  if(s){
+    try {
+      var pos=JSON.parse(s.getItem(POS_KEY)||"null");
+      if(pos && pos.b){ book=pos.b; chap=pos.c||1; trans=pos.t||"kjv"; }
+    } catch(e){}
+  }
+  bookSel.value=book;
+  fillChapters();
+  $("btnKJV").classList.toggle("active", trans==="kjv");
+  $("btnASV").classList.toggle("active", trans==="asv");
+  $("btnBoth").classList.toggle("active", trans==="both");
+  load();
+})();
+</script>
+
+</body>
+</html>
